@@ -58,10 +58,33 @@ grails.config.locations = [
 	"file:${userHome}/.grails/${appName}-config.groovy"
 ]
 
+//email server settings
+grails.mail.default.from="admin@openmentor.org"
+//Change to your own email configuration
+grails {
+	mail {
+	  host = "smtp.gmail.com"
+	  port = 465
+	  username = "openmentoruk@gmail.com"
+	  password = "asdfqwer1234"
+	  props = ["mail.smtp.auth":"true",
+			   "mail.smtp.socketFactory.port":"465",
+			   "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+			   "mail.smtp.socketFactory.fallback":"false"]
+ 
+	} 
+}
+//spring security settings
+grails.plugins.springsecurity.ui.register.defaultRoleNames = ['ROLE_OPENMENTOR-USER']
+grails.plugins.springsecurity.ui.register.postRegisterUrl = '/'
+grails.plugins.springsecurity.ui.password.validationRegex = '^.*(?=.*\\d)(?=.*[a-zA-Z]).*$'
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
+        //grails.serverURL = "http://lslvm-pz3.ecs.soton.ac.uk:8080/${appName}"
+		//grails.serverURL = "http://localhost:8080/${appName}"
+		grails.serverURL = "http://lslvm-ars2.ecs.soton.ac.uk:8080/${appName}"
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"

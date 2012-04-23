@@ -33,6 +33,10 @@
  			<sec:ifLoggedIn>
 			Logged in as <sec:username/> (<g:link controller='logout'>Logout</g:link>)
 			</sec:ifLoggedIn>
+			<sec:ifNotLoggedIn>
+				<span><g:link controller='login' action='auth'>Login</g:link></span>
+				<span style="margin-left:10px"><g:link controller='register' action="index">Register</g:link></span>
+			</sec:ifNotLoggedIn>
 		</div>
 		<div class="nav">
         </div>

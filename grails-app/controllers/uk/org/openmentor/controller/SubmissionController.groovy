@@ -1,7 +1,7 @@
 package uk.org.openmentor.controller
 
 import grails.plugins.springsecurity.Secured;
-
+import grails.converters.JSON
 import java.util.Map;
 
 import org.codehaus.groovy.grails.commons.ConfigurationHolder;

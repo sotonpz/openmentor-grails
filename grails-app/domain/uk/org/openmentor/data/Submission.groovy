@@ -23,7 +23,10 @@ class Submission {
 	Date dateSubmitted = new Date()
 	
 	static belongsTo = [ assignment: Assignment ]
-	
+
+	static mapping = {
+		fileContents sqltype:'longblob'	
+	}
 	static hasMany = [ 
 		comments: Comment, 
 		studentIds: String,

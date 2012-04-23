@@ -8,6 +8,9 @@ class Comment {
 
 	static hasMany = [ classes: String ]
 
+	static mappings = {
+		text sqlType:'longtext'	
+	}
     static constraints = {
 		text(nullable: false)
     }

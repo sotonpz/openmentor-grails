@@ -21,18 +21,18 @@ class BootStrap {
 		switch (Environment.current) {
 			
 			case Environment.DEVELOPMENT:
-				seedTestData()
+				//seedTestData()
 				break;
 			
 			case Environment.TEST:
-				seedTestData()
+				//seedTestData()
 				break;
 			
 			case Environment.PRODUCTION:
 				break;
 		}
 
-		seedUserData()
+		//seedUserData()
 	}
 
 	def destroy = {

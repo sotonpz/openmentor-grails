@@ -1,9 +1,11 @@
 dataSource {
     pooled = true
     //driverClassName = "org.hsqldb.jdbcDriver"
-	driverClassName = "org.h2.Driver"
-    username = "sa"
-    password = ""
+	//driverClassName = "org.h2.Driver"
+	driverClassName= "com.mysql.jdbc.Driver"
+	dialect = "org.hibernate.dialect.MySQL5InnoDBDialect"
+	username = "openmentor"
+    password = "openmentor"
 }
 hibernate {
 	jdbc.batch_size = 0
@@ -16,9 +18,12 @@ hibernate {
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop','update'
+            //dbCreate = "create" // one of 'create', 'create-drop','update'
             //url = "jdbc:hsqldb:mem:devDB"
-			url = "jdbc:h2:mem:devDB"
+			//url = "jdbc:h2:mem:devDB"
+			url="jdbc:mysql://localhost:3306/openmentor?characterEncoding=UTF-8"
+			username = "openmentor"
+			password = "openmentor"
         }
     }
     test {
@@ -31,16 +36,16 @@ environments {
         dataSource {
             dbCreate = "update"
             url = "jdbc:mysql://localhost:3306/test_openmentor?characterEncoding=UTF-8"
-			username='root'
-			password=''
+			//username='root'
+			//password=''
         }
     }
     production {
         dataSource {
-            dbCreate = "update"
+            //dbCreate = "update"
             url = "jdbc:mysql://localhost:3306/openmentor?characterEncoding=UTF-8"
-			username='root'
-			password=''
+			username = "openmentor"
+			password = "openmentor"
         }
     }
 }
