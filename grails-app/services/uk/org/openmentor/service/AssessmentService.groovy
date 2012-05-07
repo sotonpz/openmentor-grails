@@ -3,9 +3,6 @@ package uk.org.openmentor.service
 import java.util.Collection;
 import java.util.Map;
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder;
-import org.junit.rules.ExpectedException;
-
 import uk.org.openmentor.data.Submission;
 import uk.org.openmentor.domain.Categorization;
 import uk.org.openmentor.domain.Category;
@@ -27,7 +24,23 @@ class AssessmentService {
 
     static transactional = true
 	
-	private Categorization getCategorization(Set<Submission> submissions) {
+	EvaluationScheme evaluationComponent
+	
+	/**
+	 * Returns a Categorization constructed from a single submission. 
+	 * @param submission
+	 * @return a Categorization
+	 */
+	public Categorization getCategorization(Submission submission) {
+		return getCategorization([submission] as Set<Submission>)
+    }
+	
+	/**
+	 * Returns a Categorization constructed from a set of submissions. 
+	 * @param submission
+	 * @return a Categorization
+	 */
+	public Categorization getCategorization(Set<Submission> submissions) {
 		Categorization ctgz = new Categorization()
 		ctgz.clear()
 		ctgz.addComments(submissions)
@@ -48,31 +61,38 @@ class AssessmentService {
 	}
 	
 	private Integer getValuesTotal(Collection<Integer> values) {
-		Integer result = 0
-		
-		for(Integer element in values) {
-			result += element
-		}
-		
-		return result
+		return values.sum(0)
 	}
 	
-	private aggregateComments
-		
 	/**
-	 * Builds a DataBook for charting purposes.
+	 * Builds a DataBook for charting purposes, based on a single submission. 
+	 * @return  the DataBook instance
+	 */
+	public final DataBook buildDataBook(Submission submission) {
+		return buildDataBook([submission] as Set<Submission>)
+	}
+	
+	/**
+	 * Builds a DataBook for charting purposes, based on a set of submissions. 
 	 * @return  the DataBook instance
 	 */
 	public final DataBook buildDataBook(Set<Submission> submissions) {
-
-		DataBook dataBook = new DataBook();
-		
 		Categorization ctgz = getCategorization(submissions)
+		return buildDataBook(ctgz)
+	}
 		
+	/**
+	 * Builds a DataBook for charting purposes, based on a categorization
+	 * constructed from the set of submissions.
+	 *  
+	 * @return  the DataBook instance
+	 */
+	public final DataBook buildDataBook(Categorization ctgz) {
+		DataBook dataBook = new DataBook();
 		Map<String, Integer> actualCounts = getCommentCounts(ctgz)
 		Integer commentCount = getValuesTotal(actualCounts.values())
-		log.error("Actual coment counts: " + actualCounts)
-		log.error("Total coment count: " + commentCount)
+		log.debug("Actual coment counts: " + actualCounts)
+		log.debug("Total coment count: " + commentCount)
 		
 		List<String> categories = Category.getCategories()
 		List<String> bands = Category.getBands()
@@ -80,7 +100,7 @@ class AssessmentService {
 		
 		Map<String, List<String>> comments = new HashMap<String, List<String>>();
 		for (String category: categories) {
-			log.error("Comment: " + category + ", " + ctgz.getComments(category))
+			log.debug("Comment: " + category + ", " + ctgz.getComments(category))
 			comments.put(category, ctgz.getComments(category));
 		}
 		Map<String, List<String>> aggregateComments = aggregateComments(comments);
@@ -130,7 +150,7 @@ class AssessmentService {
 	
 	private Map<String, Number> aggregateBands(Map<String, Number> count) {
 		Map<String, Number> expected = new HashMap<String, Number>();
-		Map<String, String> categoryBands = ConfigurationHolder.config.openmentor.categoryBands as Map<String, String>
+		Map<String, String> categoryBands = Category.getCategoryBandMap()
 		for (String category : Category.getCategories() ) {
 			String band = categoryBands.get(category);
 			Number value = count.get(category)
@@ -145,7 +165,7 @@ class AssessmentService {
 	
 	private Map<String, List<String>> aggregateComments(Map<String, List<String>> comments) {
 		Map<String, List<String>> result = new HashMap<String, List<String>>();
-		Map<String, String> categoryBands = ConfigurationHolder.config.openmentor.categoryBands as Map<String, String>
+		Map<String, String> categoryBands = Category.getCategoryBandMap()
 		for (String category : Category.getCategories() ) {
 			String band = categoryBands.get(category);
 			List<String> value = comments.get(category)
@@ -170,7 +190,7 @@ class AssessmentService {
         for (String band : Category.getBands() ) {
             Number sum = 0.0;
             for (String grade : Grade.getGrades()) {
-                sum += count.get(grade) * getIdealProportion(band, grade);
+                sum += count.get(grade) * evaluationComponent.getIdealProportion(band, grade);
             }
             expected.put(band, sum);
             if (log.isDebugEnabled()) {
@@ -179,11 +199,4 @@ class AssessmentService {
         }
         return expected;        
     }
-	
-	public Number getIdealProportion(final String band, final String grade) {
-		
-		Map<String, Map<String, Double>> weights = ConfigurationHolder.config.openmentor.weights as Map<String, Double>
-		Double value = weights.get(grade).get(band)
-		return value
-	}
 }

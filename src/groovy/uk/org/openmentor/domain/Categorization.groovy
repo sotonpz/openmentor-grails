@@ -71,27 +71,39 @@ class Categorization {
 	}
 	
 	/**
-	 * Describe <code>getComments</code> method here.
+	 * Returns a list of comments for a given band within this Categorization
+	 * instance. 
+	 * @param band
+	 * @return
+	 */
+	public final List<String> getBandComments(String band) {
+		List<String> grades = Grade.getGrades()
+		return grades.collectMany { getBandComments(band, it) }
+	}
+	
+	/**
+	 * Returns a list of all comments associated with a given category
+	 * (not a band) in this categorization. 
 	 *
-	 * @param category a <code>Category</code> value
+	 * @param category a <code>String</code> value
 	 * @return a <code>List</code> value
 	 */
 	public final List<String> getComments(String category) {
 		List list = new ArrayList<String>();
 		for (String grade : Grade.getGrades()) {
-			list.addAll(getComments(category,grade));
+			list.addAll(getComments(category, grade));
 		}
 		return list;
 	}
 	
 	/**
 	 * Get the list of comments associated with the cell (category,
-	 * grade,), ensuring that an empty list is returned when
+	 * grade), ensuring that an empty list is returned when
 	 * appropriate.
 	 *
-	 * @param category one cell index;
-	 * @param grade    the other cell index;
-	 * @return the required count.
+	 * @param category one String value
+	 * @param grade    another String value
+	 * @return a <code>List</code> value.
 	 */
 	public final List<String> getComments(String category, String grade) {
 		Map<Category,List<String>> categoryMap = gradeMap.get(grade);
@@ -103,6 +115,24 @@ class Categorization {
 			return emptyList;
 		}
 		return commentList;
+	}
+	
+	/**
+	 * Get the list of comments associated with the cell (band,
+	 * grade), ensuring that an empty list is returned when
+	 * appropriate.
+	 *
+	 * @param band
+	 * @param grade
+	 * @return the list of comments
+	 */
+	public final List<String> getBandComments(String band, String grade) {
+		Map<Category,List<String>> categoryMap = gradeMap.get(grade);
+		if (categoryMap == null) {
+			return emptyList;
+		}
+		List<String> categories = Category.getBandCategories(band)		
+		return categories.collectMany { categoryMap.get(it) ?: [] }
 	}
 	
 	/**

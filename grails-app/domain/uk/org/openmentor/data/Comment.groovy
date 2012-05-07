@@ -12,6 +12,6 @@ class Comment {
 		text sqlType:'longtext'	
 	}
     static constraints = {
-		text(nullable: false)
+		text(nullable: false, , maxSize: 4*1024)
     }
 }

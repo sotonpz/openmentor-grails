@@ -29,7 +29,7 @@ environments {
     test {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-            url = "jdbc:hsqldb:mem:testDB"
+            url = "jdbc:h2:mem:testDB"
         }
     }
     staging {
