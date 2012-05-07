@@ -38,7 +38,8 @@ class BootStrap {
 				break;
 		}
 		//seedUserData()
-		initializeConfiguration()
+		//Don't need this function if the data is already there
+		//initializeConfiguration()
 	}
 
 	def destroy = {

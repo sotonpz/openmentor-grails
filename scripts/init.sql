@@ -44,6 +44,32 @@ INSERT INTO `assignment` VALUES (1,0,'TMA01','CM2006',NULL),(2,0,'TMA02','CM2006
 UNLOCK TABLES;
 
 --
+-- Table structure for table `category`
+--
+
+DROP TABLE IF EXISTS `category`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `category` (
+  `category` varchar(8) NOT NULL,
+  `version` bigint(20) NOT NULL,
+  `band` varchar(2) NOT NULL,
+  PRIMARY KEY (`category`),
+  KEY `band_index` (`band`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `category`
+--
+
+LOCK TABLES `category` WRITE;
+/*!40000 ALTER TABLE `category` DISABLE KEYS */;
+INSERT INTO `category` VALUES ('A1',0,'A'),('A2',0,'A'),('A3',0,'A'),('B1',0,'B'),('B2',0,'B'),('B3',0,'B'),('C1',0,'C'),('C2',0,'C'),('C3',0,'C'),('D1',0,'D'),('D2',0,'D'),('D3',0,'D');
+/*!40000 ALTER TABLE `category` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `comment`
 --
 
@@ -54,7 +80,7 @@ CREATE TABLE `comment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `version` bigint(20) NOT NULL,
   `submission_id` bigint(20) NOT NULL,
-  `text` longtext NOT NULL,
+  `text` varchar(4096) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK38A5EE5FB5AFCD5D` (`submission_id`),
   CONSTRAINT `FK38A5EE5FB5AFCD5D` FOREIGN KEY (`submission_id`) REFERENCES `submission` (`id`)
@@ -71,27 +97,29 @@ LOCK TABLES `comment` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `comment_classes`
+-- Table structure for table `comment_category`
 --
 
-DROP TABLE IF EXISTS `comment_classes`;
+DROP TABLE IF EXISTS `comment_category`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `comment_classes` (
-  `comment_id` bigint(20) DEFAULT NULL,
-  `classes_string` varchar(255) DEFAULT NULL,
-  KEY `FK27ADFE46AF383D17` (`comment_id`),
-  CONSTRAINT `FK27ADFE46AF383D17` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`id`)
+CREATE TABLE `comment_category` (
+  `comment_categories_id` bigint(20) DEFAULT NULL,
+  `category_id` varchar(8) DEFAULT NULL,
+  KEY `FKA7CEBADE4866F885` (`category_id`),
+  KEY `FKA7CEBADE4D411E5A` (`comment_categories_id`),
+  CONSTRAINT `FKA7CEBADE4D411E5A` FOREIGN KEY (`comment_categories_id`) REFERENCES `comment` (`id`),
+  CONSTRAINT `FKA7CEBADE4866F885` FOREIGN KEY (`category_id`) REFERENCES `category` (`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `comment_classes`
+-- Dumping data for table `comment_category`
 --
 
-LOCK TABLES `comment_classes` WRITE;
-/*!40000 ALTER TABLE `comment_classes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `comment_classes` ENABLE KEYS */;
+LOCK TABLES `comment_category` WRITE;
+/*!40000 ALTER TABLE `comment_category` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comment_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -156,8 +184,8 @@ DROP TABLE IF EXISTS `course_tutors`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_tutors` (
-  `course_id` varchar(255) NOT NULL,
   `tutor_id` varchar(255) NOT NULL,
+  `course_id` varchar(255) NOT NULL,
   PRIMARY KEY (`course_id`,`tutor_id`),
   KEY `FK6C8A28A195B1496` (`tutor_id`),
   KEY `FK6C8A28A1F6F414BE` (`course_id`),
@@ -172,8 +200,32 @@ CREATE TABLE `course_tutors` (
 
 LOCK TABLES `course_tutors` WRITE;
 /*!40000 ALTER TABLE `course_tutors` DISABLE KEYS */;
-INSERT INTO `course_tutors` VALUES ('AA1003','M4000061'),('CM2006','M4000061'),('CM2006','M4000062'),('CM2007','M4000062'),('CM2006','M4000063'),('CM3010','M4000063');
+INSERT INTO `course_tutors` VALUES ('M4000061','AA1003'),('M4000061','CM2006'),('M4000062','CM2006'),('M4000062','CM2007'),('M4000063','CM2006'),('M4000063','CM3010');
 /*!40000 ALTER TABLE `course_tutors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `grade`
+--
+
+DROP TABLE IF EXISTS `grade`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `grade` (
+  `grade` varchar(2) NOT NULL,
+  `version` bigint(20) NOT NULL,
+  PRIMARY KEY (`grade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `grade`
+--
+
+LOCK TABLES `grade` WRITE;
+/*!40000 ALTER TABLE `grade` DISABLE KEYS */;
+INSERT INTO `grade` VALUES ('A',0),('B',0),('C',0),('D',0),('E',0),('F',0);
+/*!40000 ALTER TABLE `grade` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -266,12 +318,15 @@ CREATE TABLE `submission` (
   `version` bigint(20) NOT NULL,
   `assignment_id` bigint(20) NOT NULL,
   `date_submitted` datetime NOT NULL,
-  `file_contents` longblob,
+  `file_contents` mediumblob,
   `filename` varchar(255) NOT NULL,
-  `grade` varchar(255) NOT NULL,
+  `grade_id` varchar(2) NOT NULL,
+  `username` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
+  KEY `FK84363B4CB7A962AF` (`grade_id`),
   KEY `FK84363B4C37E291BD` (`assignment_id`),
-  CONSTRAINT `FK84363B4C37E291BD` FOREIGN KEY (`assignment_id`) REFERENCES `assignment` (`id`)
+  CONSTRAINT `FK84363B4C37E291BD` FOREIGN KEY (`assignment_id`) REFERENCES `assignment` (`id`),
+  CONSTRAINT `FK84363B4CB7A962AF` FOREIGN KEY (`grade_id`) REFERENCES `grade` (`grade`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -417,6 +472,36 @@ LOCK TABLES `user_role` WRITE;
 INSERT INTO `user_role` VALUES (2,1);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `weight`
+--
+
+DROP TABLE IF EXISTS `weight`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `weight` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  `band` varchar(2) NOT NULL,
+  `grade` varchar(2) NOT NULL,
+  `weight` float NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKD0D14278B8341403` (`grade`),
+  KEY `band_grade_index` (`band`,`grade`),
+  CONSTRAINT `FKD0D14278B8341403` FOREIGN KEY (`grade`) REFERENCES `grade` (`grade`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `weight`
+--
+
+LOCK TABLES `weight` WRITE;
+/*!40000 ALTER TABLE `weight` DISABLE KEYS */;
+INSERT INTO `weight` VALUES (1,0,'A','A',0.3),(2,0,'B','A',0.5),(3,0,'C','A',0.15),(4,0,'D','A',0.05),(5,0,'A','B',0.25),(6,0,'B','B',0.5),(7,0,'C','B',0.2),(8,0,'D','B',0.05),(9,0,'A','C',0.15),(10,0,'B','C',0.6),(11,0,'C','C',0.2),(12,0,'D','C',0.05),(13,0,'A','D',0.1),(14,0,'B','D',0.6),(15,0,'C','D',0.25),(16,0,'D','D',0.05),(17,0,'A','E',0.05),(18,0,'B','E',0.65),(19,0,'C','E',0.25),(20,0,'D','E',0.05),(21,0,'A','F',0.05),(22,0,'B','F',0.65),(23,0,'C','F',0.25),(24,0,'D','F',0.05);
+/*!40000 ALTER TABLE `weight` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -427,4 +512,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-03-28 16:42:45
+-- Dump completed on 2012-05-07 17:35:12
