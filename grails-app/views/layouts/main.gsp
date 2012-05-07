@@ -90,6 +90,7 @@
                     		Background
                     		</g:link>
                     	</li>
+                    	<%-- 
                     	<sec:ifAnyGranted roles="ROLE_OPENMENTOR-USER">
                     	<li>
                     		<g:link action="show" controller="user" id="${sec.username()}">
@@ -97,6 +98,7 @@
                     		</g:link>
                     	</li>
                     	</sec:ifAnyGranted>
+                    	--%>
                     </ul>
                     
                     <sec:ifAnyGranted roles="ROLE_OPENMENTOR-ADMIN">

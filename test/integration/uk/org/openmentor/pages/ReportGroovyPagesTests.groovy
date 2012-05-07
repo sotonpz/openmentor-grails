@@ -8,6 +8,7 @@ import uk.org.openmentor.data.Submission
 import uk.org.openmentor.data.Assignment
 import uk.org.openmentor.config.Grade;
 import uk.org.openmentor.controller.HistoryController;
+import uk.org.openmentor.controller.ReportController;
 import uk.org.openmentor.controller.SubmissionController
 import org.apache.commons.io.IOUtils
 
@@ -17,7 +18,7 @@ import org.apache.commons.io.IOUtils
  *
  * @author morungos
  */
-class SubmissionGroovyPagesTests extends GroovyPagesTestCase {
+class ReportGroovyPagesTests extends GroovyPagesTestCase {
 	
 	def analyzerService
 
@@ -51,11 +52,11 @@ class SubmissionGroovyPagesTests extends GroovyPagesTestCase {
 	}
 
 	/**
-	 * Test the submission controller's ability to show a submission. To do this, 
+	 * Test the report controller's ability to show a report. To do this, 
 	 * of course, we actually need a submission that we can use. 
 	 */
-	void testSubmissionShow() {
-		def file = new File("grails-app/views/submission/show.gsp")
+	void testReportCourse() {
+		def file = new File("grails-app/views/report/course.gsp")
 
 		Submission sub = addSubmission("CM2006", "TMA03", '09000231', 'M4000061', 'A', "test/resources/test1a.doc")
 		assertTrue sub != null
@@ -63,35 +64,11 @@ class SubmissionGroovyPagesTests extends GroovyPagesTestCase {
 		sub.save(flush: true, validate: true)
 		assertTrue sub.id != null
 
-		def controller = new SubmissionController()
-		controller.params.putAt('id', sub.id)
-		
-		def model = controller.show()
+		def controller = new ReportController()
+		controller.session.putAt('current_course', 'CM2006')
+		def model = controller.course()
 
 		def htmlString = applyTemplate(file.text, model)
-		assertTrue(htmlString.contains("Submission for test/resources/test1a.doc"))
-		assertTrue(htmlString.contains("Its good to see you found this resource useful."))
-	}
-
-	/**
-	 * Test the submission controller's ability to show a submission. To do this, 
-	 * of course, we actually need a submission that we can use. 
-	 */
-	void testHistoryList() {
-		def file = new File("grails-app/views/history/list.gsp")
-
-		Submission sub = addSubmission("CM2006", "TMA03", '09000231', 'M4000061', 'A', "test/resources/test1a.doc")
-		assertTrue sub != null
-
-		sub.save(flush: true, validate: true)
-		assertTrue sub.id != null
-
-		def controller = new HistoryController()
-		
-		def model = controller.list()
-
-		def htmlString = applyTemplate(file.text, model)
-		assertTrue(htmlString.contains(sub.filename))
-		assertTrue(htmlString.contains("admin"))
+		assertTrue(htmlString.contains("CM2006"))
 	}
 }
