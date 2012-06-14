@@ -31,7 +31,7 @@
                         </tr>
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="student.courses.label" default="Courses" />:</td>
-                            <td valign="top" class="value"><%= studentInstance.courses.collect { it.courseId }.sort().join(', ') %></td>
+                            <td valign="top" class="value">${studentInstance.courses.collect { it.courseId }.sort().join(', ')}</td>
                         </tr>
                     </tbody>
                 </table>
