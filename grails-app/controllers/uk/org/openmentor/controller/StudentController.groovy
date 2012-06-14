@@ -2,7 +2,8 @@ package uk.org.openmentor.controller
 
 import org.springframework.security.access.annotation.Secured;
 
-import uk.org.openmentor.courseinfo.Student;
+import uk.org.openmentor.courseinfo.Student
+import uk.org.openmentor.courseinfo.Course
 
 @Secured(['ROLE_OPENMENTOR-ADMIN','ROLE_OPENMENTOR-USER'])
 class StudentController {
@@ -32,10 +33,19 @@ class StudentController {
 
 	def save = {
 		def studentInstance = new Student(params)
-		
+		//println "!!!!!!!!!!!!!!!!!!!!"+studentInstance.courses
+		if(params.courses)
+		{
+			
+			params.list('courses').each{cid->
+				def course = Course.findByCourseId(cid)
+				if(course != null)
+					studentInstance.addToCourses(course)
+			}	
+		}
 		if (studentInstance.save(flush: true)) {
 			flash.message = "${message(code: 'default.created.message', args: [message(code: 'student.label', default: 'Student'), studentInstance.studentId])}"
-			redirect(action: "list", id: studentInstance.studentId)
+			redirect(action: "show", id: studentInstance.studentId)
 		}
 		else {
 			log.info("Failed to create new sample: returning to dialog")
@@ -82,9 +92,11 @@ class StudentController {
                 }
             }
 			
+			def courseList = []
+			studentInstance.courses.each{courseList << it}
+			courseList.each{studentInstance.removeFromCourses(it)}
 			studentInstance.properties = params
-
-            if (!studentInstance.hasErrors() && studentInstance.save(flush: true)) {
+            if (!studentInstance.hasErrors() && studentInstance.save(validate:false,flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'student.label', default: 'Student'), studentInstance.studentId])}"
                 redirect(action: "list")
             }
